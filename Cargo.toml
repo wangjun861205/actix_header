@@ -1,6 +1,6 @@
 [package]
 name = "actix_header"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "shortcut to implement actix-web headers"
 license = "MIT"
