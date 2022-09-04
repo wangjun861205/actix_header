@@ -4,6 +4,7 @@ version = "0.1.1"
 edition = "2021"
 description = "shortcut to implement actix-web headers"
 license = "MIT"
+author = "wangjun861205"
 
 [lib]
 proc-macro = true
