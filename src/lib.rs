@@ -11,6 +11,8 @@ pub fn actix_header(attr: TokenStream, token: TokenStream) -> TokenStream {
         #input
 
         use std::str::FromStr;
+        use actix_web::error::ParseError;
+
         impl TryIntoHeaderValue for #ident {
             type Error = InvalidHeaderValue;
             fn try_into_value(self) -> Result<HeaderValue, Self::Error> {
@@ -25,7 +27,6 @@ pub fn actix_header(attr: TokenStream, token: TokenStream) -> TokenStream {
             }
             fn parse<M: HttpMessage>(msg: &M) -> Result<Self, ParseError> {
                 let s = msg.headers().get(Self::name()).ok_or(ParseError::Header)?.to_str().map_err(|e| {
-                    error!("{}", e);
                     ParseError::Header
                 })?;
                 Ok(Self::from(s.to_owned()))
