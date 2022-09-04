@@ -2,11 +2,14 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
-#[proc_macro_derive(ActixHeader)]
-pub fn actix_header(token: TokenStream) -> TokenStream {
-    let DeriveInput { ident, .. } = parse_macro_input!(token);
-    let ident_str = ident.to_string();
+#[proc_macro_attribute]
+pub fn actix_header(attr: TokenStream, token: TokenStream) -> TokenStream {
+    let input: DeriveInput = parse_macro_input!(token);
+    let ident = input.ident.clone();
+    let name = attr.to_string();
     let output = quote!(
+        #input
+
         use std::str::FromStr;
         impl TryIntoHeaderValue for #ident {
             type Error = InvalidHeaderValue;
@@ -14,11 +17,11 @@ pub fn actix_header(token: TokenStream) -> TokenStream {
                 let s: String = self.into();
                 HeaderValue::from_str(&s)
             }
-        }
 
+        }
         impl ParseHeader for #ident {
             fn name() -> HeaderName {
-                HeaderName::from_str(#ident_str).unwrap()
+                HeaderName::from_str(#name).unwrap()
             }
             fn parse<M: HttpMessage>(msg: &M) -> Result<Self, ParseError> {
                 let s = msg.headers().get(Self::name()).ok_or(ParseError::Header)?.to_str().map_err(|e| {
